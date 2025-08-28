@@ -18,7 +18,9 @@ ApproveIT helps you quickly review large collections of images and sort them int
 
 ## Features
 
-- **Modern UI**: A professional and clean interface with a dark theme.
+- **Modern UI**: A professional and clean interface with customizable themes.
+- **Theme Toggle**: Switch between light and dark themes with a single click.
+- **Colored Action Buttons**: Green approve and red disapprove buttons for clear visual feedback.
 - **Icon-Based Buttons**: Intuitive icons for all major actions.
 - **Keyboard Shortcuts**: Navigate and sort images without touching the mouse.
 - **Zoom Controls**: Built-in zoom functionality for detailed image inspection.
@@ -80,9 +82,10 @@ python3 image_approver.py
 
 1. Click "📂 Select Folder" to choose a directory containing the images you want to sort.
 2. The application will create "approved" and "disapproved" subfolders in the selected directory.
-3. Review images one by one and use the buttons or keyboard shortcuts:
-   - **✔ Approve**: Move the image to the "approved" folder.
-   - **❌ Disapprove**: Move the image to the "disapproved" folder.
+3. Use the **🌓 Toggle Theme** button to switch between light and dark themes.
+4. Review images one by one and use the buttons or keyboard shortcuts:
+   - **✔ Approve** (Green): Move the image to the "approved" folder.
+   - **❌ Disapprove** (Red): Move the image to the "disapproved" folder.
    - **↑ / ↓**: Navigate to the previous or next image.
    - **↩ Undo**: Revert the last move action.
    - **＋ / －**: Zoom in or out of the image.
@@ -99,13 +102,14 @@ python3 image_approver.py
 
 | Key | Action | Button |
 |-----|--------|--------|
-| ← | Disapprove image | ❌ Disapprove |
-| → | Approve image | ✔ Approve |
+| ← | Disapprove image | ❌ Disapprove (Red) |
+| → | Approve image | ✔ Approve (Green) |
 | ↑ | Previous image | ↑ |
 | ↓ | Next image | ↓ |
 | Z | Undo last action | ↩ Undo |
 | + | Zoom in | ＋ |
 | - | Zoom out | － |
+| T | Toggle theme | 🌓 Toggle Theme |
 | Space | Reset zoom | (No button) |
 
 ## Contributing
@@ -119,11 +123,14 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 ## Version History
 
 ### v2.0 (Current)
-- Complete UI overhaul with a modern dark theme.
+- Complete UI overhaul with a modern interface.
+- **Theme Toggle**: Added light/dark theme switching functionality.
+- **Colored Buttons**: Green approve and red disapprove buttons for better visual feedback.
 - Replaced standard `tkinter` widgets with `tkinter.ttk` themed widgets.
 - Added intuitive icons to all buttons.
 - Implemented a progress bar for better progress tracking.
 - Improved layout, spacing, and fonts for a professional look.
+- Enhanced user experience with dynamic styling.
 
 ### v1.0
 - Initial release
