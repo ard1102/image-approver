@@ -24,18 +24,7 @@ class ImageApprover:
 
         # Set a modern theme
         self.style = ttk.Style()
-        self.style.theme_use('clam')
-
-        # Customizing the theme for a more modern look
-        font_family = "Segoe UI" if os.name == 'nt' else "SF Pro" if os.name == 'posix' else "Arial"
-        self.style.configure("TButton", padding=8, relief="flat", background="#333333", foreground="white", font=(font_family, 10))
-        self.style.map("TButton",
-            background=[('active', '#555555')],
-            foreground=[('active', 'white')]
-        )
-        self.style.configure("TFrame", background="#222222")
-        self.style.configure("TLabel", background="#222222", foreground="#CCCCCC", font=(font_family, 10))
-        self.style.configure("Header.TLabel", font=(font_family, 14, "bold"), foreground="#FFFFFF")
+        self.theme = 'dark'  # Default theme
 
         # Initialize variables
         self.image_files = []
@@ -66,7 +55,74 @@ class ImageApprover:
         self.root.bind('<minus>', lambda event: self.zoom_out())
         self.root.bind('<space>', lambda event: self.reset_zoom())
         self.root.bind('<KeyRelease-space>', lambda event: self.reset_zoom())
+
+        self.apply_theme()
+
+    def apply_theme(self):
+        font_family = "Segoe UI" if os.name == 'nt' else "SF Pro" if os.name == 'posix' else "Arial"
+
+        # Theme settings
+        if self.theme == 'dark':
+            bg_color = "#222222"
+            fg_color = "#CCCCCC"
+            header_fg_color = "#FFFFFF"
+            btn_bg = "#333333"
+            btn_fg = "white"
+            btn_active_bg = "#555555"
+            img_frame_bg = "#000000"
+        else: # Light theme
+            bg_color = "#F0F0F0"
+            fg_color = "#333333"
+            header_fg_color = "#000000"
+            btn_bg = "#E1E1E1"
+            btn_fg = "black"
+            btn_active_bg = "#D1D1D1"
+            img_frame_bg = "#FFFFFF"
+
+        self.style.theme_use('clam')
+
+        # General styles
+        self.style.configure("TFrame", background=bg_color)
+        self.style.configure("TLabel", background=bg_color, foreground=fg_color, font=(font_family, 10))
+        self.style.configure("Header.TLabel", font=(font_family, 14, "bold"), foreground=header_fg_color)
+
+        # Button styles
+        self.style.configure("TButton", padding=8, relief="flat", font=(font_family, 10), background=btn_bg, foreground=btn_fg)
+        self.style.map("TButton",
+            background=[('active', btn_active_bg)],
+            foreground=[('active', btn_fg)]
+        )
+
+        # Approve/Disapprove button styles
+        if self.theme == 'dark':
+            approve_bg = "#2a7e2a"
+            approve_active_bg = "#3a9e3a"
+            disapprove_bg = "#a02c2c"
+            disapprove_active_bg = "#c03c3c"
+        else:
+            approve_bg = "#90EE90"
+            approve_active_bg = "#7CFC00"
+            disapprove_bg = "#F08080"
+            disapprove_active_bg = "#FF6347"
+
+        self.style.configure("Approve.TButton", background=approve_bg, foreground='white')
+        self.style.map("Approve.TButton", background=[('active', approve_active_bg)])
+
+        self.style.configure("Disapprove.TButton", background=disapprove_bg, foreground='white')
+        self.style.map("Disapprove.TButton", background=[('active', disapprove_active_bg)])
         
+        # Apply background to root window
+        self.root.configure(bg=bg_color)
+
+        # Update existing widget colors
+        if hasattr(self, 'image_frame'):
+            self.image_frame.config(bg=img_frame_bg)
+            self.canvas.config(bg=img_frame_bg)
+
+    def toggle_theme(self):
+        self.theme = 'light' if self.theme == 'dark' else 'dark'
+        self.apply_theme()
+
     def create_widgets(self):
         # Main frame
         self.main_frame = ttk.Frame(self.root, style="TFrame")
@@ -78,8 +134,9 @@ class ImageApprover:
         
         self.select_btn = ttk.Button(self.folder_frame, text="📂 Select Folder", command=self.select_folder, style="TButton")
         self.select_btn.pack(side=tk.LEFT)
-        self.select_btn.bind("<Enter>", lambda e: self.on_enter(e.widget))
-        self.select_btn.bind("<Leave>", lambda e: self.on_leave(e.widget))
+
+        self.theme_btn = ttk.Button(self.folder_frame, text="Toggle Theme", command=self.toggle_theme, style="TButton")
+        self.theme_btn.pack(side=tk.LEFT, padx=(5,0))
         
         self.folder_label = ttk.Label(self.folder_frame, text="No folder selected", style="TLabel")
         self.folder_label.pack(side=tk.LEFT, padx=(15, 0))
@@ -89,11 +146,11 @@ class ImageApprover:
         self.image_name_label.pack(pady=(0, 10))
         
         # Image display frame
-        self.image_frame = tk.Frame(self.main_frame, bg='#000000', relief='sunken', bd=2)
+        self.image_frame = tk.Frame(self.main_frame, relief='sunken', bd=2)
         self.image_frame.pack(fill=tk.BOTH, expand=True, pady=(0, 15))
         
         # Canvas for image display
-        self.canvas = tk.Canvas(self.image_frame, bg='#000000', highlightthickness=0)
+        self.canvas = tk.Canvas(self.image_frame, highlightthickness=0)
         self.canvas.pack(fill=tk.BOTH, expand=True)
         
         # Zoom controls
@@ -137,24 +194,13 @@ class ImageApprover:
         # Spacer
         ttk.Frame(self.control_frame).pack(side=tk.LEFT, expand=True)
         
-        self.disapprove_btn = ttk.Button(self.control_frame, text="❌ Disapprove", command=self.disapprove_image, style="TButton", state=tk.DISABLED)
+        self.disapprove_btn = ttk.Button(self.control_frame, text="❌ Disapprove", command=self.disapprove_image, style="Disapprove.TButton", state=tk.DISABLED)
         self.disapprove_btn.pack(side=tk.LEFT)
         
-        self.approve_btn = ttk.Button(self.control_frame, text="✔ Approve", command=self.approve_image, style="TButton", state=tk.DISABLED)
+        self.approve_btn = ttk.Button(self.control_frame, text="✔ Approve", command=self.approve_image, style="Approve.TButton", state=tk.DISABLED)
         self.approve_btn.pack(side=tk.LEFT, padx=(5, 0))
 
         # Bind hover events to all buttons
-        for btn in [self.select_btn, self.zoom_out_btn, self.zoom_in_btn, self.prev_btn, self.next_btn, self.undo_btn, self.disapprove_btn, self.approve_btn]:
-            btn.bind("<Enter>", lambda e: self.on_enter(e.widget))
-            btn.bind("<Leave>", lambda e: self.on_leave(e.widget))
-
-    def on_enter(self, widget):
-        if 'disabled' not in widget.state():
-            widget.style.map("TButton", background=[('active', '#666666')])
-
-    def on_leave(self, widget):
-        widget.style.map("TButton", background=[('active', '#555555')])
-
     def select_folder(self):
         folder_path = filedialog.askdirectory()
         if folder_path:
