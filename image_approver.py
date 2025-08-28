@@ -111,6 +111,37 @@ class ImageApprover:
         self.style.configure("Disapprove.TButton", background=disapprove_bg, foreground='white')
         self.style.map("Disapprove.TButton", background=[('active', disapprove_active_bg)])
         
+        # Select Folder button style (blue color)
+        if self.theme == 'dark':
+            select_folder_bg = "#1e3a8a"
+            select_folder_active_bg = "#2563eb"
+        else:
+            select_folder_bg = "#3b82f6"
+            select_folder_active_bg = "#2563eb"
+            
+        self.style.configure("SelectFolder.TButton", background=select_folder_bg, foreground='white', font=(font_family, 10, "bold"))
+        self.style.map("SelectFolder.TButton", background=[('active', select_folder_active_bg)])
+        
+        # Modern Theme Toggle button style
+        if self.theme == 'dark':
+            theme_toggle_bg = "#374151"
+            theme_toggle_active_bg = "#4b5563"
+            theme_toggle_fg = "#f9fafb"
+        else:
+            theme_toggle_bg = "#f3f4f6"
+            theme_toggle_active_bg = "#e5e7eb"
+            theme_toggle_fg = "#374151"
+            
+        self.style.configure("ThemeToggle.TButton", 
+                           background=theme_toggle_bg, 
+                           foreground=theme_toggle_fg, 
+                           font=(font_family, 14), 
+                           relief="flat",
+                           borderwidth=1)
+        self.style.map("ThemeToggle.TButton", 
+                     background=[('active', theme_toggle_active_bg)],
+                     relief=[('pressed', 'sunken')])
+        
         # Apply background to root window
         self.root.configure(bg=bg_color)
 
@@ -132,14 +163,15 @@ class ImageApprover:
         self.folder_frame = ttk.Frame(self.main_frame, style="TFrame")
         self.folder_frame.pack(fill=tk.X, pady=(0, 15))
         
-        self.select_btn = ttk.Button(self.folder_frame, text="📂 Select Folder", command=self.select_folder, style="TButton")
+        self.select_btn = ttk.Button(self.folder_frame, text="📂 Select Folder", command=self.select_folder, style="SelectFolder.TButton")
         self.select_btn.pack(side=tk.LEFT)
-
-        self.theme_btn = ttk.Button(self.folder_frame, text="Toggle Theme", command=self.toggle_theme, style="TButton")
-        self.theme_btn.pack(side=tk.LEFT, padx=(5,0))
         
         self.folder_label = ttk.Label(self.folder_frame, text="No folder selected", style="TLabel")
         self.folder_label.pack(side=tk.LEFT, padx=(15, 0))
+        
+        # Modern theme toggle button positioned on the right
+        self.theme_btn = ttk.Button(self.folder_frame, text="🌓", command=self.toggle_theme, style="ThemeToggle.TButton", width=3)
+        self.theme_btn.pack(side=tk.RIGHT)
         
         # Image name display
         self.image_name_label = ttk.Label(self.main_frame, text="", style="Header.TLabel")
