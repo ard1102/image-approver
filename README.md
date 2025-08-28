@@ -1,6 +1,10 @@
-# ApproveIT
+# ApproveIT v2.0
 
 A simple and efficient tool for quickly sorting and organizing images through an intuitive approval/disapproval workflow.
+
+_**Note:** The UI has been completely revamped in v2.0 for a modern look and feel. The screenshot will be updated shortly._
+
+**[Screenshot Placeholder: A new screenshot of the v2.0 UI will be added here]**
 
 ![Python](https://img.shields.io/badge/python-3.6%2B-blue) ![License](https://img.shields.io/badge/license-MIT-green)
 
@@ -14,12 +18,13 @@ ApproveIT helps you quickly review large collections of images and sort them int
 
 ## Features
 
-- **Intuitive UI**: Clean and simple interface for quick decision making
-- **Keyboard Shortcuts**: Navigate and sort images without touching the mouse
-- **Zoom Controls**: Built-in zoom functionality for detailed image inspection
-- **Undo Capability**: Easily undo your last action
-- **Progress Tracking**: See how many images are left to review
-- **Non-destructive**: Original images are moved to separate folders, preserving your source directory
+- **Modern UI**: A professional and clean interface with a dark theme.
+- **Icon-Based Buttons**: Intuitive icons for all major actions.
+- **Keyboard Shortcuts**: Navigate and sort images without touching the mouse.
+- **Zoom Controls**: Built-in zoom functionality for detailed image inspection.
+- **Undo Capability**: Easily undo your last action.
+- **Progress Bar**: A visual indicator to track your sorting progress.
+- **Non-destructive**: Original images are moved to separate folders, preserving your source directory.
 
 ## Pain Points Addressed
 
@@ -73,17 +78,15 @@ python3 image_approver.py
 
 ## Usage
 
-1. Click "Select Folder" to choose a directory containing images you want to sort
-2. The application will create "approved" and "disapproved" subfolders in the selected directory
-3. Review images one by one and:
-   - Press **→** or click "Approve" to move the image to the "approved" folder
-   - Press **←** or click "Disapprove" to move the image to the "disapproved" folder
-   - Press **↑** or click "Previous" to go back to the previous image
-   - Press **↓** or click "Next" to skip to the next image
-   - Press **Z** or click "Undo" to undo your last action (up to 10 actions)
-   - Press **+** or click "Zoom In" to enlarge the image
-   - Press **-** or click "Zoom Out" to shrink the image
-   - Press **Space** to reset zoom to the default 40%
+1. Click "📂 Select Folder" to choose a directory containing the images you want to sort.
+2. The application will create "approved" and "disapproved" subfolders in the selected directory.
+3. Review images one by one and use the buttons or keyboard shortcuts:
+   - **✔ Approve**: Move the image to the "approved" folder.
+   - **❌ Disapprove**: Move the image to the "disapproved" folder.
+   - **↑ / ↓**: Navigate to the previous or next image.
+   - **↩ Undo**: Revert the last move action.
+   - **＋ / －**: Zoom in or out of the image.
+   - **Spacebar**: Reset the zoom to the default level.
 
 ## Default Settings
 
@@ -94,16 +97,16 @@ python3 image_approver.py
 
 ## Keyboard Shortcuts
 
-| Key | Action |
-|-----|--------|
-| ← | Disapprove image |
-| → | Approve image |
-| ↑ | Previous image |
-| ↓ | Next image |
-| Z | Undo last action |
-| + | Zoom in |
-| - | Zoom out |
-| Space | Reset zoom |
+| Key | Action | Button |
+|-----|--------|--------|
+| ← | Disapprove image | ❌ Disapprove |
+| → | Approve image | ✔ Approve |
+| ↑ | Previous image | ↑ |
+| ↓ | Next image | ↓ |
+| Z | Undo last action | ↩ Undo |
+| + | Zoom in | ＋ |
+| - | Zoom out | － |
+| Space | Reset zoom | (No button) |
 
 ## Contributing
 
@@ -115,7 +118,14 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ## Version History
 
-### v1.0 (Current)
+### v2.0 (Current)
+- Complete UI overhaul with a modern dark theme.
+- Replaced standard `tkinter` widgets with `tkinter.ttk` themed widgets.
+- Added intuitive icons to all buttons.
+- Implemented a progress bar for better progress tracking.
+- Improved layout, spacing, and fonts for a professional look.
+
+### v1.0
 - Initial release
 - Fixed UI stability issues with zoom operations
 - Implemented 40% default zoom for better initial viewing experience
