@@ -162,37 +162,139 @@ class ImageApprover:
         self.toggle_canvas.bind("<Button-1>", self.on_toggle_click)
         
     def draw_toggle(self):
-        """Draw the toggle switch on canvas"""
+        """Draw the toggle switch on canvas with moon/sun icons"""
         self.toggle_canvas.delete("all")
         
-        # Colors based on current theme and state
+        # Enhanced colors based on current theme and state
         if self.theme == 'dark':
             bg_color = "#2d2d2d"
-            track_on = "#2a9d8f"
-            track_off = "#404040"
-            thumb_color = "#ffffff"
+            track_on = "#1a5f5a"  # Darker teal for better contrast
+            track_off = "#3a3a3a"
+            thumb_color = "#f8f9fa"
+            thumb_shadow = "#1a1a1a"
+            icon_color = "#ffd700"  # Gold for moon
         else:
             bg_color = "#f0f0f0"
-            track_on = "#2a9d8f"
-            track_off = "#cccccc"
+            track_on = "#20b2aa"  # Brighter teal for light theme
+            track_off = "#d1d5db"
             thumb_color = "#ffffff"
+            thumb_shadow = "#9ca3af"
+            icon_color = "#f59e0b"  # Amber for sun
             
         # Set canvas background
         self.toggle_canvas.configure(bg=bg_color)
         
-        # Draw track (rounded rectangle)
+        # Draw track shadow for depth
         track_color = track_on if self.toggle_state else track_off
+        self.create_rounded_rect(
+            self.toggle_canvas, 6, 9, 56, 23, 7, fill=thumb_shadow, outline=""
+        )
+        
+        # Draw main track
         self.track = self.create_rounded_rect(
             self.toggle_canvas, 5, 8, 55, 22, 7, fill=track_color, outline=""
         )
         
-        # Draw thumb (circle)
+        # Draw thumb shadow for depth
         thumb_x = 42 if self.toggle_state else 18
-        self.thumb = self.toggle_canvas.create_oval(
-            thumb_x-8, 6, thumb_x+8, 24, 
-            fill=thumb_color, outline="#dddddd", width=1
+        self.toggle_canvas.create_oval(
+            thumb_x-7, 7, thumb_x+9, 25, 
+            fill=thumb_shadow, outline=""
         )
         
+        # Draw main thumb
+        self.thumb = self.toggle_canvas.create_oval(
+            thumb_x-8, 6, thumb_x+8, 24, 
+            fill=thumb_color, outline="#e5e7eb", width=1
+        )
+        
+        # Draw moon/sun icon on the thumb
+        if self.toggle_state:  # Dark theme - show moon
+            self.draw_moon_icon(thumb_x, 15, icon_color)
+        else:  # Light theme - show sun
+            self.draw_sun_icon(thumb_x, 15, icon_color)
+        
+    def draw_moon_icon(self, center_x, center_y, color):
+        """Draw an enhanced crescent moon icon"""
+        # Main moon circle with subtle gradient effect
+        moon_radius = 4
+        # Draw moon base
+        self.toggle_canvas.create_oval(
+            center_x - moon_radius, center_y - moon_radius,
+            center_x + moon_radius, center_y + moon_radius,
+            fill=color, outline=""
+        )
+        
+        # Add moon highlight
+        self.toggle_canvas.create_oval(
+            center_x - moon_radius + 1, center_y - moon_radius + 1,
+            center_x + moon_radius - 1, center_y + moon_radius - 1,
+            fill="#fff8dc", outline=""
+        )
+        
+        # Create crescent by overlaying a smaller circle
+        overlay_x = center_x + 2.5
+        overlay_radius = 3.2
+        overlay_color = "#f8f9fa" if self.theme == 'dark' else "#f0f0f0"
+        self.toggle_canvas.create_oval(
+            overlay_x - overlay_radius, center_y - overlay_radius,
+            overlay_x + overlay_radius, center_y + overlay_radius,
+            fill=overlay_color, outline=""
+        )
+        
+        # Add small stars around moon
+        star_positions = [(-2, -3), (3, -2), (-1, 3)]
+        for sx, sy in star_positions:
+            star_x, star_y = center_x + sx, center_y + sy
+            self.toggle_canvas.create_text(
+                star_x, star_y, text="✦", fill="#ffd700", font=("Arial", 4)
+            )
+    
+    def draw_sun_icon(self, center_x, center_y, color):
+        """Draw an enhanced sun icon with rays"""
+        import math
+        
+        # Draw sun rays first (behind the center)
+        ray_length = 2.5
+        ray_distance = 4
+        ray_color = "#fbbf24"  # Bright yellow for rays
+        
+        for i in range(8):
+            angle = i * math.pi / 4  # 45 degrees apart
+            # Inner point (start of ray)
+            x1 = center_x + ray_distance * math.cos(angle)
+            y1 = center_y + ray_distance * math.sin(angle)
+            # Outer point (end of ray)
+            x2 = center_x + (ray_distance + ray_length) * math.cos(angle)
+            y2 = center_y + (ray_distance + ray_length) * math.sin(angle)
+            
+            self.toggle_canvas.create_line(
+                x1, y1, x2, y2, fill=ray_color, width=2, capstyle="round"
+            )
+        
+        # Sun center circle with gradient effect
+        sun_radius = 3.5
+        # Draw sun base
+        self.toggle_canvas.create_oval(
+            center_x - sun_radius, center_y - sun_radius,
+            center_x + sun_radius, center_y + sun_radius,
+            fill=color, outline=""
+        )
+        
+        # Add sun highlight for 3D effect
+        self.toggle_canvas.create_oval(
+            center_x - sun_radius + 1, center_y - sun_radius + 1,
+            center_x + sun_radius - 1, center_y + sun_radius - 1,
+            fill="#fef3c7", outline=""
+        )
+        
+        # Add inner glow
+        self.toggle_canvas.create_oval(
+            center_x - 2, center_y - 2,
+            center_x + 2, center_y + 2,
+            fill="#fffbeb", outline=""
+        )
+    
     def create_rounded_rect(self, canvas, x1, y1, x2, y2, radius, **kwargs):
         """Create a rounded rectangle on canvas"""
         points = []
@@ -269,6 +371,13 @@ class ImageApprover:
             new_x-8, 6, new_x+8, 24, 
             fill=thumb_color, outline="#dddddd", width=1
         )
+        
+        # Draw moon/sun icon on the moving thumb
+        icon_color = "#ffd700" if self.theme == 'dark' else "#f59e0b"
+        if self.toggle_state:  # Dark theme - show moon
+            self.draw_moon_icon(new_x, 15, icon_color)
+        else:  # Light theme - show sun
+            self.draw_sun_icon(new_x, 15, icon_color)
         
         # Schedule next step
         self.toggle_canvas.after(20, lambda: self.animate_step(
