@@ -122,25 +122,7 @@ class ImageApprover:
         self.style.configure("SelectFolder.TButton", background=select_folder_bg, foreground='white', font=(font_family, 10, "bold"))
         self.style.map("SelectFolder.TButton", background=[('active', select_folder_active_bg)])
         
-        # Modern Theme Toggle button style
-        if self.theme == 'dark':
-            theme_toggle_bg = "#374151"
-            theme_toggle_active_bg = "#4b5563"
-            theme_toggle_fg = "#f9fafb"
-        else:
-            theme_toggle_bg = "#f3f4f6"
-            theme_toggle_active_bg = "#e5e7eb"
-            theme_toggle_fg = "#374151"
-            
-        self.style.configure("ThemeToggle.TButton", 
-                           background=theme_toggle_bg, 
-                           foreground=theme_toggle_fg, 
-                           font=(font_family, 14), 
-                           relief="flat",
-                           borderwidth=1)
-        self.style.map("ThemeToggle.TButton", 
-                     background=[('active', theme_toggle_active_bg)],
-                     relief=[('pressed', 'sunken')])
+        # Canvas toggle styling is handled in draw_toggle method
         
         # Apply background to root window
         self.root.configure(bg=bg_color)
@@ -149,10 +131,168 @@ class ImageApprover:
         if hasattr(self, 'image_frame'):
             self.image_frame.config(bg=img_frame_bg)
             self.canvas.config(bg=img_frame_bg)
+            
+        # Update canvas toggle if it exists
+        if hasattr(self, 'toggle_canvas'):
+            self.update_canvas_toggle()
 
     def toggle_theme(self):
         self.theme = 'light' if self.theme == 'dark' else 'dark'
         self.apply_theme()
+
+    def create_canvas_toggle(self):
+        """Create a modern Canvas-based toggle switch"""
+        # Create canvas for toggle switch
+        self.toggle_canvas = tk.Canvas(
+            self.folder_frame, 
+            width=60, 
+            height=30, 
+            highlightthickness=0,
+            relief='flat',
+            bd=0
+        )
+        
+        # Initialize toggle state
+        self.toggle_state = self.theme == 'dark'
+        
+        # Draw initial toggle
+        self.draw_toggle()
+        
+        # Bind click event
+        self.toggle_canvas.bind("<Button-1>", self.on_toggle_click)
+        
+    def draw_toggle(self):
+        """Draw the toggle switch on canvas"""
+        self.toggle_canvas.delete("all")
+        
+        # Colors based on current theme and state
+        if self.theme == 'dark':
+            bg_color = "#2d2d2d"
+            track_on = "#2a9d8f"
+            track_off = "#404040"
+            thumb_color = "#ffffff"
+        else:
+            bg_color = "#f0f0f0"
+            track_on = "#2a9d8f"
+            track_off = "#cccccc"
+            thumb_color = "#ffffff"
+            
+        # Set canvas background
+        self.toggle_canvas.configure(bg=bg_color)
+        
+        # Draw track (rounded rectangle)
+        track_color = track_on if self.toggle_state else track_off
+        self.track = self.create_rounded_rect(
+            self.toggle_canvas, 5, 8, 55, 22, 7, fill=track_color, outline=""
+        )
+        
+        # Draw thumb (circle)
+        thumb_x = 42 if self.toggle_state else 18
+        self.thumb = self.toggle_canvas.create_oval(
+            thumb_x-8, 6, thumb_x+8, 24, 
+            fill=thumb_color, outline="#dddddd", width=1
+        )
+        
+    def create_rounded_rect(self, canvas, x1, y1, x2, y2, radius, **kwargs):
+        """Create a rounded rectangle on canvas"""
+        points = []
+        for x, y in [(x1, y1 + radius), (x1, y1), (x1 + radius, y1),
+                     (x2 - radius, y1), (x2, y1), (x2, y1 + radius),
+                     (x2, y2 - radius), (x2, y2), (x2 - radius, y2),
+                     (x1 + radius, y2), (x1, y2), (x1, y2 - radius)]:
+            points.extend([x, y])
+        return canvas.create_polygon(points, smooth=True, **kwargs)
+        
+    def on_toggle_click(self, event):
+        """Handle toggle click event with animation"""
+        self.toggle_state = not self.toggle_state
+        self.animate_toggle()
+        self.toggle_theme()
+        
+    def animate_toggle(self):
+        """Animate the toggle switch transition"""
+        # Get current and target positions
+        current_x = 18 if not self.toggle_state else 42
+        target_x = 42 if self.toggle_state else 18
+        
+        # Animation parameters
+        steps = 8
+        step_size = (target_x - current_x) / steps
+        delay = 20  # milliseconds
+        
+        # Animate the thumb movement
+        self.animate_step(current_x, target_x, step_size, steps, 0)
+        
+    def animate_step(self, current_x, target_x, step_size, total_steps, current_step):
+        """Perform one step of the animation"""
+        if current_step >= total_steps:
+            # Animation complete, draw final state
+            self.draw_toggle()
+            return
+            
+        # Calculate new position
+        new_x = current_x + (step_size * current_step)
+        
+        # Update track color during animation
+        if self.theme == 'dark':
+            track_on = "#2a9d8f"
+            track_off = "#404040"
+            thumb_color = "#ffffff"
+        else:
+            track_on = "#2a9d8f"
+            track_off = "#cccccc"
+            thumb_color = "#ffffff"
+            
+        # Interpolate track color
+        progress = current_step / total_steps
+        if self.toggle_state:
+            # Transitioning to ON
+            track_color = self.interpolate_color(track_off, track_on, progress)
+        else:
+            # Transitioning to OFF
+            track_color = self.interpolate_color(track_on, track_off, progress)
+            
+        # Clear and redraw
+        self.toggle_canvas.delete("all")
+        
+        # Set canvas background
+        bg_color = "#2d2d2d" if self.theme == 'dark' else "#f0f0f0"
+        self.toggle_canvas.configure(bg=bg_color)
+        
+        # Draw track
+        self.create_rounded_rect(
+            self.toggle_canvas, 5, 8, 55, 22, 7, fill=track_color, outline=""
+        )
+        
+        # Draw thumb at current position
+        self.toggle_canvas.create_oval(
+            new_x-8, 6, new_x+8, 24, 
+            fill=thumb_color, outline="#dddddd", width=1
+        )
+        
+        # Schedule next step
+        self.toggle_canvas.after(20, lambda: self.animate_step(
+            current_x, target_x, step_size, total_steps, current_step + 1
+        ))
+        
+    def interpolate_color(self, color1, color2, progress):
+        """Interpolate between two hex colors"""
+        # Convert hex to RGB
+        r1, g1, b1 = int(color1[1:3], 16), int(color1[3:5], 16), int(color1[5:7], 16)
+        r2, g2, b2 = int(color2[1:3], 16), int(color2[3:5], 16), int(color2[5:7], 16)
+        
+        # Interpolate
+        r = int(r1 + (r2 - r1) * progress)
+        g = int(g1 + (g2 - g1) * progress)
+        b = int(b1 + (b2 - b1) * progress)
+        
+        # Convert back to hex
+        return f"#{r:02x}{g:02x}{b:02x}"
+        
+    def update_canvas_toggle(self):
+        """Update toggle appearance after theme change"""
+        self.toggle_state = self.theme == 'dark'
+        self.draw_toggle()
 
     def create_widgets(self):
         # Main frame
@@ -169,9 +309,9 @@ class ImageApprover:
         self.folder_label = ttk.Label(self.folder_frame, text="No folder selected", style="TLabel")
         self.folder_label.pack(side=tk.LEFT, padx=(15, 0))
         
-        # Modern theme toggle button positioned on the right
-        self.theme_btn = ttk.Button(self.folder_frame, text="🌓", command=self.toggle_theme, style="ThemeToggle.TButton", width=3)
-        self.theme_btn.pack(side=tk.RIGHT)
+        # Modern Canvas-based toggle switch positioned on the right
+        self.create_canvas_toggle()
+        self.toggle_canvas.pack(side=tk.RIGHT, padx=(10, 0))
         
         # Image name display
         self.image_name_label = ttk.Label(self.main_frame, text="", style="Header.TLabel")
