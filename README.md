@@ -1,4 +1,4 @@
-# ApproveIT v2.0
+# ApproveIT v2.0 ✨
 
 A simple and efficient tool for quickly sorting and organizing images through an intuitive approval/disapproval workflow.
 
@@ -8,30 +8,30 @@ _**Note:** The UI has been completely revamped in v2.0 for a modern look and fee
 
 ![Python](https://img.shields.io/badge/python-3.6%2B-blue) ![License](https://img.shields.io/badge/license-MIT-green)
 
-## Overview
+## 🌟 Overview
 
 ApproveIT helps you quickly review large collections of images and sort them into "approved" and "disapproved" categories. This tool is perfect for:
-- Cleaning up photo collections
-- Organizing design assets
-- Reviewing generated images from AI tools
-- Managing large batches of photos
+- 🖼️ Cleaning up photo collections
+- 🎨 Organizing design assets
+- 🤖 Reviewing generated images from AI tools
+- 📂 Managing large batches of photos
 
-## Features
+## 🚀 Features
 
-- **Modern UI**: A professional and clean interface with customizable themes.
-- **Theme Toggle**: Switch between light and dark themes with a single click.
-- **Colored Action Buttons**: Green approve and red disapprove buttons for clear visual feedback.
-- **Icon-Based Buttons**: Intuitive icons for all major actions.
-- **Keyboard Shortcuts**: Navigate and sort images without touching the mouse.
-- **Zoom Controls**: Built-in zoom functionality for detailed image inspection.
-- **Undo Capability**: Easily undo your last action.
-- **Progress Bar**: A visual indicator to track your sorting progress.
-- **Non-destructive**: Original images are moved to separate folders, preserving your source directory.
+- **🎨 Modern UI**: A professional and clean interface with customizable themes.
+- **🌓 Theme Toggle**: Switch between light and dark themes with a single click.
+- **🖌️ Colored Action Buttons**: Green approve and red disapprove buttons for clear visual feedback.
+- **💡 Icon-Based Buttons**: Intuitive icons for all major actions.
+- **⌨️ Keyboard Shortcuts**: Navigate and sort images without touching the mouse.
+- **🔍 Zoom Controls**: Built-in zoom functionality for detailed image inspection.
+- **↩️ Undo Capability**: Easily undo your last action.
+- **📊 Progress Bar**: A visual indicator to track your sorting progress.
+- **🛡️ Non-destructive**: Original images are moved to separate folders, preserving your source directory.
 
-## Pain Points Addressed
+## ❤️‍🩹 Pain Points Addressed
 
 ### 1. Slow Image Review Process
-Traditional image management requires opening each image individually in a viewer, making decisions, and then manually moving files. ApproveIT streamlines this by presenting one image at a time with quick action buttons.
+Traditional image management requires opening each image individually, making decisions, and then manually moving files. ApproveIT streamlines this by presenting one image at a time with quick action buttons.
 
 ### 2. UI Becomes Unusable During Zoom Operations
 Fixed in v1.0: Earlier versions had issues with the UI expanding during zoom operations. This has been resolved with a proper canvas implementation that maintains UI stability.
@@ -45,7 +45,7 @@ The application now shows clear progress indicators, including how many images r
 ### 5. No Way to Undo Actions
 Added undo functionality that allows you to reverse up to 10 recent actions.
 
-## Installation
+## 💻 Installation
 
 ### Prerequisites
 - Python 3.6 or higher
@@ -78,49 +78,49 @@ or
 python3 image_approver.py
 ```
 
-## Usage
+## 🎮 Usage
 
-1. Click "📂 Select Folder" to choose a directory containing the images you want to sort.
+1. Click **📂 Select Folder** to choose a directory containing the images you want to sort.
 2. The application will create "approved" and "disapproved" subfolders in the selected directory.
 3. Use the **🌓 Toggle Theme** button to switch between light and dark themes.
 4. Review images one by one and use the buttons or keyboard shortcuts:
    - **✔ Approve** (Green): Move the image to the "approved" folder.
    - **❌ Disapprove** (Red): Move the image to the "disapproved" folder.
-   - **↑ / ↓**: Navigate to the previous or next image.
-   - **↩ Undo**: Revert the last move action.
-   - **＋ / －**: Zoom in or out of the image.
-   - **Spacebar**: Reset the zoom to the default level.
+   - **🔼 / 🔽**: Navigate to the previous or next image.
+   - **↩️ Undo**: Revert the last move action.
+   - **➕ / ➖**: Zoom in or out of the image.
+   - **`Spacebar`**: Reset the zoom to the default level.
 
-## Default Settings
+## ⚙️ Default Settings
 
 - **Starting Zoom Level**: 40% (improves initial viewing experience for large images)
 - **Minimum Zoom**: 10%
 - **Maximum Zoom**: 500%
 - **Zoom Step**: 10% per increment
 
-## Keyboard Shortcuts
+## ⌨️ Keyboard Shortcuts
 
 | Key | Action | Button |
 |-----|--------|--------|
-| ← | Disapprove image | ❌ Disapprove (Red) |
-| → | Approve image | ✔ Approve (Green) |
-| ↑ | Previous image | ↑ |
-| ↓ | Next image | ↓ |
-| Z | Undo last action | ↩ Undo |
-| + | Zoom in | ＋ |
-| - | Zoom out | － |
-| T | Toggle theme | 🌓 Toggle Theme |
-| Space | Reset zoom | (No button) |
+| ← | ❌ Disapprove image | ❌ Disapprove (Red) |
+| → | ✔️ Approve image | ✔ Approve (Green) |
+| ↑ | 🔼 Previous image | ↑ |
+| ↓ | 🔽 Next image | ↓ |
+| Z | ↩️ Undo last action | ↩ Undo |
+| + | ➕ Zoom in | ＋ |
+| - | ➖ Zoom out | － |
+| T | 🌓 Toggle theme | 🌓 Toggle Theme |
+| Space | 🔄 Reset zoom | (No button) |
 
-## Contributing
+## 🙌 Contributing
 
 Contributions are welcome! Please feel free to submit a Pull Request.
 
-## License
+## 📄 License
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
-## Version History
+## 📜 Version History
 
 ### v2.0 (Current)
 - Complete UI overhaul with a modern interface.
@@ -140,6 +140,6 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 - Improved keyboard navigation
 - Enhanced progress tracking
 
-## Support
+## 💬 Support
 
 If you encounter any issues or have feature requests, please open an issue on the GitHub repository.
