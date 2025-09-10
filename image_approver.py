@@ -425,7 +425,22 @@ class ImageApprover:
         # Image name display
         self.image_name_label = ttk.Label(self.main_frame, text="", style="Header.TLabel")
         self.image_name_label.pack(pady=(0, 10))
+
+        # Rename frame
+        self.rename_frame = ttk.Frame(self.main_frame, style="TFrame")
+        self.rename_frame.pack(pady=(0, 5))
+
+        self.rename_entry = ttk.Entry(self.rename_frame, width=40)
+        self.rename_entry.pack(side=tk.LEFT, padx=(0, 5))
+
+        self.rename_ext_label = ttk.Label(self.rename_frame, text="", style="TLabel")
+        self.rename_ext_label.pack(side=tk.LEFT)
+
+        self.rename_btn = ttk.Button(self.rename_frame, text="Rename", command=self.rename_image, style="TButton", state=tk.DISABLED)
+        self.rename_btn.pack(side=tk.LEFT, padx=(10, 0))
         
+        self.rename_entry.bind("<Return>", lambda event: self.rename_image())
+
         # Image display frame
         self.image_frame = tk.Frame(self.main_frame, relief='sunken', bd=2)
         self.image_frame.pack(fill=tk.BOTH, expand=True, pady=(0, 15))
@@ -547,6 +562,13 @@ class ImageApprover:
         # Display the image filename
         self.image_name_label.config(text=current_image)
         
+        # Populate rename entry
+        name_base, name_ext = os.path.splitext(current_image)
+        self.rename_entry.delete(0, tk.END)
+        self.rename_entry.insert(0, name_base)
+        self.rename_ext_label.config(text=name_ext)
+        self.rename_btn.state(['!disabled'])
+
         # Load and display current image
         image_path = os.path.join(self.original_folder, current_image)
         
@@ -634,6 +656,48 @@ class ImageApprover:
         # Don't reset zoom when navigating - keep current zoom level
         self.display_image()
         
+    def rename_image(self):
+        if not self.image_files:
+            return
+
+        old_name_with_ext = self.image_files[self.current_index]
+        old_name_base, ext = os.path.splitext(old_name_with_ext)
+
+        new_name_base = self.rename_entry.get().strip()
+
+        if not new_name_base:
+            messagebox.showwarning("Invalid Name", "New name cannot be empty.")
+            return
+
+        if new_name_base == old_name_base:
+            return
+
+        new_name_with_ext = new_name_base + ext
+
+        old_path = os.path.join(self.original_folder, old_name_with_ext)
+        new_path = os.path.join(self.original_folder, new_name_with_ext)
+
+        if os.path.exists(new_path):
+            messagebox.showerror("Error", f"A file named {new_name_with_ext} already exists.")
+            return
+
+        try:
+            os.rename(old_path, new_path)
+
+            self.image_files[self.current_index] = new_name_with_ext
+
+            self.undo_stack.append({
+                'action': 'rename',
+                'old_name': old_name_with_ext,
+                'new_name': new_name_with_ext
+            })
+            self.undo_btn.state(['!disabled'])
+
+            self.image_name_label.config(text=new_name_with_ext)
+
+        except Exception as e:
+            messagebox.showerror("Error", f"Could not rename file: {str(e)}")
+
     def update_navigation_buttons(self):
         # Enable/disable navigation buttons based on current position
         if not self.image_files:
@@ -711,6 +775,9 @@ class ImageApprover:
                 self.undo_btn.state(['disabled'])
                 self.prev_btn.state(['disabled'])
                 self.next_btn.state(['disabled'])
+                self.rename_btn.state(['disabled'])
+                self.rename_entry.delete(0, tk.END)
+                self.rename_ext_label.config(text="")
                 
         except Exception as e:
             messagebox.showerror("Error", f"Could not move file: {str(e)}")
@@ -723,27 +790,48 @@ class ImageApprover:
         last_operation = self.undo_stack.pop()
         
         try:
-            # Move file back
-            source_path = os.path.join(last_operation['to'], last_operation['file'])
-            destination_path = os.path.join(last_operation['from'], last_operation['file'])
-            shutil.move(source_path, destination_path)
-            
-            # Add back to image list
-            self.image_files.append(last_operation['file'])
-            
-            # Set current index to the restored image
-            self.current_index = len(self.image_files) - 1
-            
-            # Don't reset zoom - keep current zoom level
-            
-            # Display image
-            self.display_image()
-            
-            # Re-enable buttons if needed
-            if 'disabled' in self.disapprove_btn.state():
-                self.disapprove_btn.state(['!disabled'])
-                self.approve_btn.state(['!disabled'])
-                self.update_navigation_buttons()
+            action = last_operation.get('action')
+
+            if action == 'rename':
+                # Undo a rename operation
+                old_path = os.path.join(self.original_folder, last_operation['new_name'])
+                new_path = os.path.join(self.original_folder, last_operation['old_name'])
+                os.rename(old_path, new_path)
+
+                # Find the index of the renamed file and update it
+                try:
+                    idx = self.image_files.index(last_operation['new_name'])
+                    self.image_files[idx] = last_operation['old_name']
+                except ValueError:
+                    # If the file is not in the list, it might have been moved.
+                    # We need to find it in the approved/disapproved folder.
+                    # This case is complex. For now, we assume rename is only undone on the current image.
+                    pass
+
+                self.display_image()
+
+            else: # This is a move operation
+                # Move file back
+                source_path = os.path.join(last_operation['to'], last_operation['file'])
+                destination_path = os.path.join(last_operation['from'], last_operation['file'])
+                shutil.move(source_path, destination_path)
+
+                # Add back to image list
+                self.image_files.append(last_operation['file'])
+
+                # Set current index to the restored image
+                self.current_index = len(self.image_files) - 1
+
+                # Don't reset zoom - keep current zoom level
+
+                # Display image
+                self.display_image()
+
+                # Re-enable buttons if needed
+                if 'disabled' in self.disapprove_btn.state():
+                    self.disapprove_btn.state(['!disabled'])
+                    self.approve_btn.state(['!disabled'])
+                    self.update_navigation_buttons()
                 
         except Exception as e:
             messagebox.showerror("Error", f"Could not undo operation: {str(e)}")
